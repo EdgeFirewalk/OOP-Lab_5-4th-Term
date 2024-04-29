@@ -4,17 +4,24 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import javax.servlet.ServletContext;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Library {
     private static final String FILE_PATH = "books.json";
+    private ServletContext servletContext;
+
+    public Library(ServletContext servletContext) {
+        this.servletContext = servletContext;
+    }
 
     public List<Book> getBooks() {
-        System.out.println("Reading books from: " + new File(FILE_PATH).getAbsolutePath());
+        String filePath = servletContext.getRealPath(FILE_PATH);
+        System.out.println("Reading books from: " + filePath);
         List<Book> books = new ArrayList<>();
-        try (BufferedReader reader = new BufferedReader(new FileReader(FILE_PATH))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             StringBuilder content = new StringBuilder();
             String line;
             while ((line = reader.readLine()) != null) {
@@ -42,7 +49,9 @@ public class Library {
     }
 
     public void addBook(Book book) {
-        try (FileReader reader = new FileReader(FILE_PATH);
+        String filePath = servletContext.getRealPath(FILE_PATH);
+        System.out.println("Writing book to: " + filePath);
+        try (FileReader reader = new FileReader(filePath);
              BufferedReader jsonReader = new BufferedReader(reader)) {
 
             StringBuilder jsonContent = new StringBuilder();
@@ -62,7 +71,7 @@ public class Library {
             newBook.put("ISBN", book.getISBN());
             booksArray.put(newBook);
 
-            try (FileWriter fileWriter = new FileWriter(FILE_PATH)) {
+            try (FileWriter fileWriter = new FileWriter(filePath)) {
                 fileWriter.write(booksJson.toString());
                 fileWriter.flush();
             } catch (IOException e) {

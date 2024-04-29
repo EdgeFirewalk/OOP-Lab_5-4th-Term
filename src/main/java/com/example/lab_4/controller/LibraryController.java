@@ -14,8 +14,11 @@ import java.util.List;
 public class LibraryController extends HttpServlet {
     private Library library;
 
-    public LibraryController() {
-        library = new Library();
+    @Override
+    public void init(ServletConfig config) throws ServletException {
+        super.init(config);
+        ServletContext servletContext = config.getServletContext();
+        library = new Library(servletContext);
     }
 
     @Override
