@@ -12,6 +12,7 @@ public class Library {
     private static final String FILE_PATH = "books.json";
 
     public List<Book> getBooks() {
+        System.out.println("Reading books from: " + new File(FILE_PATH).getAbsolutePath());
         List<Book> books = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(FILE_PATH))) {
             StringBuilder content = new StringBuilder();
