@@ -1,0 +1,28 @@
+<component name="ArtifactManager">
+  <artifact type="exploded-war" name="OOP-Lab_5-4th-Term:war exploded">
+    <output-path>$PROJECT_DIR$/target/Lab_4-1.0-SNAPSHOT</output-path>
+    <properties id="maven-jee-properties">
+      <options>
+        <exploded>true</exploded>
+        <module>OOP-Lab_5-4th-Term</module>
+        <packaging>war</packaging>
+      </options>
+    </properties>
+    <root id="root">
+      <element id="directory" name="WEB-INF">
+        <element id="directory" name="classes">
+          <element id="module-output" name="OOP-Lab_5-4th-Term" />
+        </element>
+        <element id="directory" name="lib">
+          <element id="library" level="project" name="Maven: org.json:json:20210307" />
+          <element id="library" level="project" name="Maven: com.mysql:mysql-connector-j:8.0.33" />
+          <element id="library" level="project" name="Maven: com.google.protobuf:protobuf-java:3.21.9" />
+        </element>
+      </element>
+      <element id="directory" name="META-INF">
+        <element id="file-copy" path="$PROJECT_DIR$/target/Lab_4-1.0-SNAPSHOT/META-INF/MANIFEST.MF" />
+      </element>
+      <element id="javaee-facet-resources" facet="OOP-Lab_5-4th-Term/web/Web" />
+    </root>
+  </artifact>
+</component>
