@@ -23,6 +23,7 @@
         <element id="file-copy" path="$PROJECT_DIR$/target/Lab_4-1.0-SNAPSHOT/META-INF/MANIFEST.MF" />
       </element>
       <element id="javaee-facet-resources" facet="OOP-Lab_5-4th-Term/web/Web" />
+      <element id="library" level="project" name="Maven: com.mysql:mysql-connector-j:8.0.33" />
     </root>
   </artifact>
 </component>
