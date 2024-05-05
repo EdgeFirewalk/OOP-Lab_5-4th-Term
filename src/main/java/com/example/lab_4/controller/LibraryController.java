@@ -1,24 +1,30 @@
 package com.example.lab_4.controller;
 
 import java.io.*;
+import java.sql.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.annotation.*;
-
 import com.example.lab_4.model.Book;
-import com.example.lab_4.model.Library;
 import org.json.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @WebServlet(name = "LibraryController", value = "/LibraryController")
 public class LibraryController extends HttpServlet {
-    private Library library;
+    private static final String DB_URL = "jdbc:mysql://localhost:3306/oop_labs_books";
+    private static final String DB_USER = "root";
+    private static final String DB_PASSWORD = "root";
 
     @Override
-    public void init(ServletConfig config) throws ServletException {
-        super.init(config);
-        ServletContext servletContext = config.getServletContext();
-        library = new Library(servletContext);
+    public void init() throws ServletException {
+        super.init();
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+            throw new ServletException("MySQL JDBC Driver not found", e);
+        }
     }
 
     @Override
@@ -27,7 +33,7 @@ public class LibraryController extends HttpServlet {
         response.setCharacterEncoding("UTF-8");
         response.setContentType("application/json; charset=UTF-8");
 
-        List<Book> books = library.getBooks();
+        List<Book> books = getBooksFromDB();
         JSONArray jsonArray = new JSONArray();
 
         for (Book book : books) {
@@ -63,11 +69,51 @@ public class LibraryController extends HttpServlet {
             String ISBN = requestJson.getString("ISBN");
 
             Book newBook = new Book(bookName, authorName, coverLink, year, ISBN);
-            library.addBook(newBook);
+            addBookToDB(newBook);
 
             response.setStatus(HttpServletResponse.SC_CREATED);
         } catch (Exception e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            e.printStackTrace();
+        }
+    }
+
+    private List<Book> getBooksFromDB() {
+        List<Book> books = new ArrayList<>();
+        try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD)) {
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery("SELECT * FROM books");
+
+            while (resultSet.next()) {
+                String ISBN = resultSet.getString("ISBN");
+                String title = resultSet.getString("book_name");
+                String author = resultSet.getString("author_name");
+                String coverLink = resultSet.getString("cover_link");
+                String year = resultSet.getString("year");
+
+                books.add(new Book(title, author, coverLink, year, ISBN));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return books;
+    }
+
+    private void addBookToDB(Book book) {
+        String insertQuery = "INSERT INTO books (ISBN, book_name, author_name, cover_link, year) VALUES (?, ?, ?, ?, ?)";
+
+        try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+             PreparedStatement preparedStatement = connection.prepareStatement(insertQuery)) {
+
+            preparedStatement.setString(1, book.getISBN());
+            preparedStatement.setString(2, book.getTitle());
+            preparedStatement.setString(3, book.getAuthor());
+            preparedStatement.setString(4, book.getCoverLink());
+            preparedStatement.setString(5, book.getYear());
+
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
