@@ -7,6 +7,22 @@
     <title>LibWay</title>
 </head>
 <body>
+<div class="edit-book-modal hidden-element">
+    <div class="container">
+        <div class="edit-book-modal__inner">
+            <p class="edit-book-modal__close-button" onclick="closeEditModal()">+</p>
+            <p class="site-block-title">— Измените книгу на сайте —</p>
+            <div class="add-book__inputs">
+                <input id="edit-name-input" class="add-book__input" type="text" placeholder="Название книги">
+                <input id="edit-author-input" class="add-book__input" type="text" placeholder="Автор книги">
+                <input id="edit-cover-input" class="add-book__input" type="text" placeholder="Ссылка на обложку книги">
+                <input id="edit-year-input" class="add-book__input" type="text" placeholder="Год выхода книги">
+                <input id="edit-ISBN-input" class="add-book__input" type="text" placeholder="ISBN книги">
+            </div>
+            <button class="add-book__button" onclick="editBookOnSite()">Изменить</button>
+        </div>
+    </div>
+</div>
 <div class="header">
     <div class="container">
         <div class="header__inner">
