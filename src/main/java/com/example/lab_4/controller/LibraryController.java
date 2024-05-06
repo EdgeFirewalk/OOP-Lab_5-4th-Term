@@ -78,6 +78,55 @@ public class LibraryController extends HttpServlet {
         }
     }
 
+    @Override
+    protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        try (BufferedReader requestReader = request.getReader()) {
+            StringBuilder requestJsonContent = new StringBuilder();
+            String requestLine;
+            while ((requestLine = requestReader.readLine()) != null) {
+                requestJsonContent.append(requestLine);
+            }
+
+            JSONObject requestJson = new JSONObject(requestJsonContent.toString());
+            String bookName = requestJson.getString("title");
+            String authorName = requestJson.getString("author");
+            String coverLink = requestJson.getString("coverLink");
+            String year = requestJson.getString("year");
+            String ISBN = requestJson.getString("ISBN");
+            String oldBookTitle = requestJson.getString("oldTitle");
+            String oldBookAuthor = requestJson.getString("oldAuthor");
+
+            Book updatedBook = new Book(bookName, authorName, coverLink, year, ISBN);
+            updateBookInDB(updatedBook, oldBookTitle, oldBookAuthor);
+
+            response.setStatus(HttpServletResponse.SC_OK);
+        } catch (Exception e) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        try (BufferedReader requestReader = request.getReader()) {
+            StringBuilder requestJsonContent = new StringBuilder();
+            String requestLine;
+            while ((requestLine = requestReader.readLine()) != null) {
+                requestJsonContent.append(requestLine);
+            }
+
+            JSONObject requestJson = new JSONObject(requestJsonContent.toString());
+            String ISBN = requestJson.getString("ISBN");
+
+            deleteBookFromDB(ISBN);
+
+            response.setStatus(HttpServletResponse.SC_OK);
+        } catch (Exception e) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            e.printStackTrace();
+        }
+    }
+
     private List<Book> getBooksFromDB() {
         List<Book> books = new ArrayList<>();
         try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD)) {
@@ -111,6 +160,39 @@ public class LibraryController extends HttpServlet {
             preparedStatement.setString(3, book.getAuthor());
             preparedStatement.setString(4, book.getCoverLink());
             preparedStatement.setString(5, book.getYear());
+
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void updateBookInDB(Book book, String oldTitle, String oldAuthor) {
+        String updateQuery = "UPDATE books SET book_name = ?, author_name = ?, cover_link = ?, year = ? WHERE book_name = ? AND author_name = ?";
+
+        try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+             PreparedStatement preparedStatement = connection.prepareStatement(updateQuery)) {
+
+            preparedStatement.setString(1, book.getTitle());
+            preparedStatement.setString(2, book.getAuthor());
+            preparedStatement.setString(3, book.getCoverLink());
+            preparedStatement.setString(4, book.getYear());
+            preparedStatement.setString(5, oldTitle);
+            preparedStatement.setString(6, oldAuthor);
+
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void deleteBookFromDB(String ISBN) {
+        String deleteQuery = "DELETE FROM books WHERE ISBN = ?";
+
+        try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+             PreparedStatement preparedStatement = connection.prepareStatement(deleteQuery)) {
+
+            preparedStatement.setString(1, ISBN);
 
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
