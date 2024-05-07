@@ -168,12 +168,20 @@
     cursor: pointer;
 }
 
+.edit-book-button {
+    background-color: rgba(0, 0, 255, .25);
+}
+
+.edit-book-button:hover {
+    background-color: rgba(0, 0, 255, .5);
+}
+
 .delete-book-button {
-    background-color: rgba(255, 0, 0, .15);
+    background-color: rgba(255, 0, 0, .25);
 }
 
 .delete-book-button:hover {
-    background-color: rgba(255, 0, 0, .4);
+    background-color: rgba(255, 0, 0, .5);
 }
 
 .book__cover {

@@ -12,7 +12,7 @@ function getBooksFromLibrary() {
                 html += `<div class="book">
                             <div class="book__buttons">
                                 <div 
-                                    class="book__button" 
+                                    class="book__button edit-book-button" 
                                     onclick="openEditModal(
                                         '${book.coverLink}',
                                         '${book.title}',
